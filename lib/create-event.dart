@@ -1,14 +1,16 @@
+import 'package:eventtask/DataController.dart';
 import 'package:eventtask/styles.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'event-type.dart';
 
 class CreateEvent extends StatelessWidget {
   TextEditingController title = TextEditingController();
   TextEditingController description = TextEditingController();
-  String? filePath = "";
+  DataController controller = DataController();
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -29,21 +31,21 @@ class CreateEvent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               button1(
-                Container(
-                  height: height * 0.25,
-                  width: width,
-                  decoration: BoxDecoration(
-                      color: hexColor("F5F5F5"),
-                      borderRadius: BorderRadius.circular(15)),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      aimage("upload-file", scale: 2),
-                      SBox(context, 0.015),
-                      heading(context, text: "Upload your file here")
-                    ],
-                  ),
-                ),
+                Obx(() => Container(
+                      height: height * 0.25,
+                      width: width,
+                      decoration: BoxDecoration(
+                          color: hexColor("F5F5F5"),
+                          borderRadius: BorderRadius.circular(15)),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          aimage("upload-file", scale: 2),
+                          SBox(context, 0.015),
+                          heading(context, text: controller.filePath.value)
+                        ],
+                      ),
+                    )),
                 0,
                 color: hexColor("F5F5F5"),
                 onTap: () async {
@@ -51,7 +53,7 @@ class CreateEvent extends StatelessWidget {
                       await FilePicker.platform.pickFiles();
 
                   if (result != null) {
-                    filePath = result.files.single.path;
+                    controller.updatePath(result.files.single.path ?? "Error");
                   } else {
                     // User canceled the picker
                   }
@@ -124,7 +126,7 @@ class CreateEvent extends StatelessWidget {
                 page: EventType(
                     title: title.text,
                     description: description.text,
-                    filePath: filePath),
+                    filePath: ""),
                 child: button1(
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10),
